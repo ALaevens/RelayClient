@@ -24,14 +24,14 @@ public class SettingsFragment extends Fragment {
         settingsViewModel = provider.get(SettingsViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
+        //final TextView textView = root.findViewById(R.id.text_gallery);
         /*galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
             }
         });*/
-        textView.setText(settingsViewModel.getStatictext());
+        //textView.setText(settingsViewModel.getStatictext());
         return root;
     }
 }
