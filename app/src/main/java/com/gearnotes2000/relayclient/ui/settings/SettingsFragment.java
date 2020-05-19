@@ -1,37 +1,95 @@
 package com.gearnotes2000.relayclient.ui.settings;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.gearnotes2000.relayclient.App;
 import com.gearnotes2000.relayclient.R;
 
 public class SettingsFragment extends Fragment {
 
     private SettingsViewModel settingsViewModel;
+    private SharedPreferences sharedPreferences;
 
+    private EditText editPrimary;
+    private EditText editFallback;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
 
         ViewModelProvider provider = new ViewModelProvider(this);
         settingsViewModel = provider.get(SettingsViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        //final TextView textView = root.findViewById(R.id.text_gallery);
-        /*galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });*/
-        //textView.setText(settingsViewModel.getStatictext());
+
+        Context context = getActivity();
+        sharedPreferences = context.getSharedPreferences(getString(R.string.preference_file_ips), Context.MODE_PRIVATE);
+
+        editPrimary = root.findViewById(R.id.primaryAddress);
+        editFallback = root.findViewById(R.id.fallbackAddress);
+
+        editPrimary.setText(sharedPreferences.getString("primary", ""));
+        editFallback.setText(sharedPreferences.getString("fallback", ""));
+
+        Button saveButton = root.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener((v) -> {
+            save();
+        });
+
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        View view = getView();
+        ConstraintLayout layout = view.findViewById(R.id.settingsLayout);
+
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(layout.getWindowToken(), 0);
+    }
+
+    private void save() {
+        String primary = editPrimary.getText().toString();
+        String fallback = editFallback.getText().toString();
+
+        Log.d("SETTINGS", "Primary: '"+primary+"'");
+        Log.d("SETTINGS", "Fallback: '"+fallback+"'");
+
+        if (primary.length() == 0) {
+            Toast toast = Toast.makeText(getActivity(),"Primary address cannot be empty", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("primary", primary);
+        editor.putString("fallback", fallback);
+        editor.commit();
+
+        if (fallback.length() == 0) {
+            App.hosts = new String[]{primary};
+        } else {
+            App.hosts = new String[]{primary, fallback};
+        }
+
+        Toast toast = Toast.makeText(getActivity(),"Updated Settings", Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

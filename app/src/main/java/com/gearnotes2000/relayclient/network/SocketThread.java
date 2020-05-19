@@ -27,7 +27,7 @@ public class SocketThread extends Thread{
 
         Socket s = createSock();
 
-        while(keepRunning) {
+        while(keepRunning && s != null) {
             if (tasks.peekFirst() != null) {
                 NetworkTask task = tasks.poll();
                 //System.out.println("Do Task");

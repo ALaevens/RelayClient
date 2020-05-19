@@ -1,6 +1,8 @@
 package com.gearnotes2000.relayclient;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.gearnotes2000.relayclient.model.Relay;
@@ -8,7 +10,7 @@ import com.gearnotes2000.relayclient.model.Relay;
 import java.util.ArrayList;
 
 public class App extends Application {
-    public static final String[] hosts = {"192.168.2.60"};
+    public static String[] hosts = {};
     public static final int port = 5050;
 
     public ArrayList<Relay> relays;
@@ -21,6 +23,16 @@ public class App extends Application {
         relays = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             relays.add(new Relay(i, relayColors[i]));
+        }
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_ips), Context.MODE_PRIVATE);
+        String primary = sharedPreferences.getString("primary", "");
+        String fallback = sharedPreferences.getString("fallback", "");
+
+        if (fallback.length() == 0) {
+            hosts = new String[]{primary};
+        } else {
+            hosts = new String[]{primary, fallback};
         }
     }
 }

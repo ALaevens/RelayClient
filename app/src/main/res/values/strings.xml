@@ -16,4 +16,10 @@
     <string name="header_hours">Hours</string>
     <string name="header_minutes">Minutes</string>
     <string name="header_seconds">Seconds</string>
+
+    <string name="header_server_main">Server IP Address or Hostname</string>
+    <string name="header_server_fallback">Fallback IP Address or Hostname</string>
+    <string name="button_settings_save">Save Settings</string>
+
+    <string name="preference_file_ips">ipaddresses</string>
 </resources>
