@@ -54,10 +54,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:drawableStart="@drawable/ic_save_black_24dp"
-        android:drawablePadding="4dp"
+        android:drawablePadding="@dimen/button_icon_padding"
         android:text="@string/button_settings_save"
         android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="@+id/serverPort"
+        app:layout_constraintTop_toBottomOf="@+id/serverPort" />
+
+    <TextView
+        android:id="@+id/portHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/header_server_port"
         app:layout_constraintStart_toStartOf="@+id/fallbackAddress"
         app:layout_constraintTop_toBottomOf="@+id/fallbackAddress" />
+
+    <EditText
+        android:id="@+id/serverPort"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/portHeader"
+        app:layout_constraintTop_toBottomOf="@+id/portHeader" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

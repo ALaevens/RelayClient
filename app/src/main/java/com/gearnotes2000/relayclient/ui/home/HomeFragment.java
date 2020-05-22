@@ -80,11 +80,12 @@ public class HomeFragment extends Fragment {
         netThread.addTask(new SendTask(String.valueOf(boolToInt(state))));
     }
 
-    public void sendRelayDuration(int num, int seconds) {
+    public void sendRelayDuration(int num, int duration, int delay) {
         SocketThread netThread = homeViewModel.netThread;
         netThread.addTask(new SendTask("TIMERELAY"));
         netThread.addTask(new SendTask(String.valueOf(num)));
-        netThread.addTask(new SendTask(String.valueOf(seconds)));
+        netThread.addTask(new SendTask(String.valueOf(duration)));
+        netThread.addTask(new SendTask(String.valueOf(delay)));
     }
 
     int boolToInt(boolean bool) {

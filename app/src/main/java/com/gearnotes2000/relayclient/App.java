@@ -10,8 +10,8 @@ import com.gearnotes2000.relayclient.model.Relay;
 import java.util.ArrayList;
 
 public class App extends Application {
-    public static String[] hosts = {};
-    public static final int port = 5050;
+    public static String[] hosts;
+    public static int port;
 
     public ArrayList<Relay> relays;
 
@@ -28,6 +28,7 @@ public class App extends Application {
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_ips), Context.MODE_PRIVATE);
         String primary = sharedPreferences.getString("primary", "");
         String fallback = sharedPreferences.getString("fallback", "");
+        port = sharedPreferences.getInt("port", 5050);
 
         if (fallback.length() == 0) {
             hosts = new String[]{primary};

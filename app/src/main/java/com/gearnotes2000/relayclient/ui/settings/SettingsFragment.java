@@ -28,6 +28,7 @@ public class SettingsFragment extends Fragment {
 
     private EditText editPrimary;
     private EditText editFallback;
+    private EditText editPort;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -41,9 +42,11 @@ public class SettingsFragment extends Fragment {
 
         editPrimary = root.findViewById(R.id.primaryAddress);
         editFallback = root.findViewById(R.id.fallbackAddress);
+        editPort = root.findViewById(R.id.serverPort);
 
         editPrimary.setText(sharedPreferences.getString("primary", ""));
         editFallback.setText(sharedPreferences.getString("fallback", ""));
+        editPort.setText(String.valueOf(sharedPreferences.getInt("port", 5050)));
 
         Button saveButton = root.findViewById(R.id.saveButton);
         saveButton.setOnClickListener((v) -> {
@@ -67,9 +70,11 @@ public class SettingsFragment extends Fragment {
     private void save() {
         String primary = editPrimary.getText().toString();
         String fallback = editFallback.getText().toString();
+        String portString = editPort.getText().toString();
 
         Log.d("SETTINGS", "Primary: '"+primary+"'");
         Log.d("SETTINGS", "Fallback: '"+fallback+"'");
+        Log.d("SETTINGS", "Port: "+portString);
 
         if (primary.length() == 0) {
             Toast toast = Toast.makeText(getActivity(),"Primary address cannot be empty", Toast.LENGTH_SHORT);
@@ -77,10 +82,17 @@ public class SettingsFragment extends Fragment {
             return;
         }
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (portString.length() == 0) {
+            Toast toast = Toast.makeText(getActivity(),"Port cannot be empty", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
 
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        int port = Integer.parseInt(portString);
         editor.putString("primary", primary);
         editor.putString("fallback", fallback);
+        editor.putInt("port", port);
         editor.commit();
 
         if (fallback.length() == 0) {
@@ -88,6 +100,8 @@ public class SettingsFragment extends Fragment {
         } else {
             App.hosts = new String[]{primary, fallback};
         }
+
+        App.port = port;
 
         Toast toast = Toast.makeText(getActivity(),"Updated Settings", Toast.LENGTH_SHORT);
         toast.show();

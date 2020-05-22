@@ -23,7 +23,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:drawableStart="@drawable/ic_refresh_black_24dp"
-            android:drawablePadding="4dp"
+            android:drawablePadding="@dimen/button_icon_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

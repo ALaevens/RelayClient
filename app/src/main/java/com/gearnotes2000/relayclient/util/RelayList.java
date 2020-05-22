@@ -1,12 +1,10 @@
 package com.gearnotes2000.relayclient.util;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -14,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.gearnotes2000.relayclient.DurationDialog;
+import com.gearnotes2000.relayclient.ConfigureDialog;
 import com.gearnotes2000.relayclient.R;
 import com.gearnotes2000.relayclient.model.Relay;
 import com.gearnotes2000.relayclient.ui.home.HomeFragment;
@@ -42,7 +40,7 @@ public class RelayList extends ArrayAdapter<Relay> {
         final Relay relay = relays.get(position);
 
         TextView label = view.findViewById(R.id.label);
-        Switch sw = view.findViewById(R.id.toggleSwitch);
+        Switch sw = view.findViewById(R.id.manualSwitch);
 
         label.setText(relay.getLabel());
 
@@ -51,10 +49,10 @@ public class RelayList extends ArrayAdapter<Relay> {
             home.sendRelay(relay.getId(), state);
         });
 
-        Button timeButton = view.findViewById(R.id.timerButton);
+        Button timeButton = view.findViewById(R.id.configureButton);
         timeButton.setOnClickListener((v) -> {
-            DurationDialog dd = new DurationDialog(owner, relay.getId());
-            dd.show();
+            ConfigureDialog cd = new ConfigureDialog(owner, relay.getId());
+            cd.show();
         });
 
         return view;
