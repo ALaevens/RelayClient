@@ -13,17 +13,9 @@ public class App extends Application {
     public static String[] hosts;
     public static int port;
 
-    public ArrayList<Relay> relays;
-
     @Override
     public void onCreate() {
         super.onCreate();
-
-        String[] relayColors = {"Red", "Green", "Blue", "Yellow"};
-        relays = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            relays.add(new Relay(i, relayColors[i]));
-        }
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_ips), Context.MODE_PRIVATE);
         String primary = sharedPreferences.getString("primary", "");

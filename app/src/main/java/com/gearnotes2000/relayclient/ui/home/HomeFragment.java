@@ -1,29 +1,25 @@
 package com.gearnotes2000.relayclient.ui.home;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.gearnotes2000.relayclient.App;
 import com.gearnotes2000.relayclient.R;
 import com.gearnotes2000.relayclient.model.Relay;
-import com.gearnotes2000.relayclient.network.RefreshTask;
+import com.gearnotes2000.relayclient.network.ConfigTask;
+import com.gearnotes2000.relayclient.network.TemperatureTask;
 import com.gearnotes2000.relayclient.network.SendTask;
 import com.gearnotes2000.relayclient.network.SocketThread;
 import com.gearnotes2000.relayclient.util.RelayList;
@@ -37,6 +33,10 @@ public class HomeFragment extends Fragment {
     private ListView relayList;
     private ArrayAdapter<Relay> relayArrayAdapter;
 
+    private TextView tempDisplay;
+
+    private ArrayList<Relay> relays;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -45,14 +45,18 @@ public class HomeFragment extends Fragment {
 
         relayList = root.findViewById(R.id.relayList);
 
-        App app = (App) getActivity().getApplication();
-        relayArrayAdapter = new RelayList(this, app.relays);
-        relayList.setAdapter(relayArrayAdapter);
+        tempDisplay = root.findViewById(R.id.tempDisplay);
 
         Button refresh = root.findViewById(R.id.refreshButton);
         refresh.setOnClickListener((v) -> {
-            homeViewModel.netThread.addTask(new RefreshTask(this));
+            //homeViewModel.netThread.addTask(new TemperatureTask(this));
+            getTemperature();
         });
+
+        relays = new ArrayList<>();
+        relayArrayAdapter = new RelayList(this, relays);
+        relayList.setAdapter(relayArrayAdapter);
+
         return root;
     }
 
@@ -63,7 +67,8 @@ public class HomeFragment extends Fragment {
 
         Log.d("SOCKET", "Call open");
         homeViewModel.openConn();
-        homeViewModel.netThread.addTask(new RefreshTask(this));
+        getConfig();
+        getTemperature();
     }
 
     @Override
@@ -80,12 +85,38 @@ public class HomeFragment extends Fragment {
         netThread.addTask(new SendTask(String.valueOf(boolToInt(state))));
     }
 
-    public void sendRelayDuration(int num, int duration, int delay) {
+    public void sendRelayDuration(int num, int delay, int duration) {
         SocketThread netThread = homeViewModel.netThread;
         netThread.addTask(new SendTask("TIMERELAY"));
         netThread.addTask(new SendTask(String.valueOf(num)));
         netThread.addTask(new SendTask(String.valueOf(duration)));
         netThread.addTask(new SendTask(String.valueOf(delay)));
+    }
+
+    private void getTemperature() {
+        MutableLiveData<Double> liveTemp = new MutableLiveData<>();
+        homeViewModel.netThread.addTask(new TemperatureTask(liveTemp));
+
+        liveTemp.observe(getViewLifecycleOwner(), temp -> {
+            if (temp != null) {
+                tempDisplay.setText(String.format("Temperature: %.1f°C", temp));
+            }
+        });
+    }
+
+    private void getConfig() {
+        MutableLiveData<ArrayList<Relay>> liveRelays = new MutableLiveData<>();
+        homeViewModel.netThread.addTask(new ConfigTask(liveRelays));
+
+        liveRelays.observe(getViewLifecycleOwner(), gotRelays -> {
+            if (gotRelays != null) {
+                relays.clear();
+                relayArrayAdapter.clear();
+
+                relays.addAll(gotRelays);
+                relayArrayAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     int boolToInt(boolean bool) {

@@ -1,25 +1,17 @@
 package com.gearnotes2000.relayclient.network;
 
-import android.app.Activity;
 import android.util.Log;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import com.gearnotes2000.relayclient.R;
-import com.gearnotes2000.relayclient.network.NetworkTask;
-
+import androidx.lifecycle.MutableLiveData;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class RefreshTask implements NetworkTask {
-    private Fragment owner;
+public class TemperatureTask implements NetworkTask {
+    private MutableLiveData<Double> liveValue;
 
-    public RefreshTask(Fragment owner) {
-        this.owner = owner;
+    public TemperatureTask(MutableLiveData<Double> liveValue) {
+        this.liveValue = liveValue;
     }
 
     @Override
@@ -38,14 +30,7 @@ public class RefreshTask implements NetworkTask {
             String reply = din.readUTF();
             Log.d("SOCKETS", "RECV: "+reply);
 
-
-            owner.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TextView textView = owner.getView().findViewById(R.id.tempDisplay);
-                    textView.setText(String.format("Temperature: %.1f°C", Double.valueOf(reply)));
-                }
-            });
+            liveValue.postValue(Double.valueOf(reply));
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -3,6 +3,7 @@ package com.gearnotes2000.relayclient;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,13 +16,13 @@ public class ConfigureDialog extends AlertDialog {
     private Fragment owner;
     private int delaySeconds = 0;
     private int durationSeconds = 0;
-    private int relayID;
+    private MutableLiveData<Pair<Integer, Integer>> values;
 
-    public ConfigureDialog(Fragment owner, int relayID) {
+    public ConfigureDialog(Fragment owner, MutableLiveData<Pair<Integer, Integer>> values) {
         super(owner.getContext());
 
         this.owner = owner;
-        this.relayID = relayID;
+        this.values = values;
     }
 
     @Override
@@ -65,14 +66,21 @@ public class ConfigureDialog extends AlertDialog {
             });
         });
 
-        cancelButton.setOnClickListener(v -> dismiss());
+        cancelButton.setOnClickListener(v -> {
+            values.postValue(null);
+            dismiss();
+        });
 
         startButton.setOnClickListener(v -> {
-            HomeFragment home = (HomeFragment) owner;
-            home.sendRelayDuration(relayID, durationSeconds, delaySeconds);
+            //HomeFragment home = (HomeFragment) owner;
+            //home.sendRelayDuration(relayID, durationSeconds, delaySeconds);
+
+            values.postValue(new Pair<>(delaySeconds, durationSeconds));
             dismiss();
         });
     }
+
+
 
     private void setTimeDisplay(TextView timeDisplay, int seconds) {
         int hours = seconds/3600;

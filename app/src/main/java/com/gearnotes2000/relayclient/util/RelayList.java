@@ -1,5 +1,6 @@
 package com.gearnotes2000.relayclient.util;
 
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 
 import com.gearnotes2000.relayclient.ConfigureDialog;
 import com.gearnotes2000.relayclient.R;
@@ -51,8 +53,18 @@ public class RelayList extends ArrayAdapter<Relay> {
 
         Button timeButton = view.findViewById(R.id.configureButton);
         timeButton.setOnClickListener((v) -> {
-            ConfigureDialog cd = new ConfigureDialog(owner, relay.getId());
+            MutableLiveData<Pair<Integer, Integer>> liveValues = new MutableLiveData<>();
+
+            ConfigureDialog cd = new ConfigureDialog(owner, liveValues);
             cd.show();
+
+            liveValues.observe(owner, values -> {
+                if (values != null) {
+                    HomeFragment home = (HomeFragment) owner;
+                    home.sendRelayDuration(relay.getId(), values.first, values.second);
+                }
+            });
+
         });
 
         return view;

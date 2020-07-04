@@ -49,6 +49,7 @@ public class TimeSelectorDialog extends AlertDialog {
         }
 
         cancelButton.setOnClickListener((v) -> {
+            liveSeconds.postValue(null);
             dismiss();
         });
 
